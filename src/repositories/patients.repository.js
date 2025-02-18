@@ -13,9 +13,7 @@ export default class PatientsRepository {
       }
     });
 
-    if (!response.ok) {
-      throw `Error ${response.status} de la BBDD: ${response.statusText}`;
-    }
+
     return await response.json();
   }
 
@@ -29,9 +27,6 @@ export default class PatientsRepository {
       }
     });
 
-    if (!response.ok) {
-      throw `Error ${response.status} de la BBDD: ${response.statusText}`;
-    }
     return await response.json();
   }
 
@@ -48,9 +43,6 @@ export default class PatientsRepository {
       body: JSON.stringify(patient)
     });
 
-    if (!response.ok) {
-      throw `Error ${response.status} de la BBDD: ${response.statusText}`;
-    }
     return await response.json();
   }
 
@@ -65,28 +57,45 @@ export default class PatientsRepository {
       }
     });
 
-    if (!response.ok) {
-      throw `Error ${response.status} de la BBDD: ${response.statusText}`;
-    }
+
     return await response.json();
   }
 
-  async changePatient(patient) {
+  async changePatient(id, patient) {
     const authStore = useAuthStore();
     const token = authStore.token;
-
-    const response = await fetch(server + "/patients/" + patient.id, {
+  
+    // Crear un objeto con solo los campos necesarios
+    console.log(patient.languages);
+    const patientData = {
+      fullName: patient.fullName,
+      birthDate: patient.birthDate,
+      fullAddress: patient.fullAddress,
+      dni: patient.dni,
+      healthCardNumber: patient.healthCardNumber,
+      phone: patient.phone,
+      email: patient.email,
+      zoneId: patient.zoneId,
+      personalFamilySituation: patient.personalFamilySituation,
+      healthSituation: patient.healthSituation,
+      housingSituation: patient.housingSituation,
+      personalAutonomy: patient.personalAutonomy,
+      economicSituation: patient.economicSituation,
+      operatorId: patient.operatorId,
+      languages: patient.languages,
+      status: patient.status
+    };
+  
+    const response = await fetch(server + "/patients/" + id, {
       method: "PUT",
       headers: {
         "Content-Type": "application/json",
         "Authorization": `Bearer ${token}`
       },
-      body: JSON.stringify(patient)
+      body: JSON.stringify(patientData)
     });
+  
 
-    if (!response.ok) {
-      throw `Error ${response.status} de la BBDD: ${response.statusText}`;
-    }
     return await response.json();
   }
 }

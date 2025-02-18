@@ -331,6 +331,7 @@ import { mapActions, mapState } from 'pinia'
 import { useCounterStore } from '@/stores/index.js'
 import SearchableSelect from '@/components/utils/SearchableSelect.vue'
 import LanguagesSelect from '@/components/utils/LanguagesSelect.vue'
+import { useMessagesStore } from '@/stores/messages'
 
 export default {
   props: ['id'],
@@ -371,14 +372,17 @@ export default {
   },
 
   async mounted() {
-    if (this.isEditing) {
-      await this.loadPatientData();
-    }
 
     this.initializeValidationSchema()
     await this.loadOperators()
     await this.loadZones()
     await this.loadLanguages()
+    if (this.isEditing) {
+      await this.loadPatientData();
+
+    }
+
+
   },
 
   methods: {
@@ -391,12 +395,13 @@ export default {
         if (response.data) {
           this.form = { ...this.form, ...response.data };
           // Ensure languages are in the correct format for the select component
-          this.form.languages = this.form.languages.map(lang => typeof lang === 'object' ? lang.name : lang);
+
         } else {
           this.$router.push('/patients')
         }
       } catch (error) {
-        console.error('Error loading patient data:', error)
+        // console.error('Error loading patient data:', error)
+        useMessagesStore().pushMessageAction({ message: 'Error al cargar los datos del paciente', type: 'error' })
         this.$router.push('/patients')
       }
     },
@@ -527,12 +532,15 @@ export default {
           }
 
           if (response.success) {
+            useMessagesStore().pushMessageAction({ message: 'Paciente guardado correctamente', type: 'success' })
             this.$router.push('/patients')
           } else {
+            useMessagesStore().pushMessageAction({ message: response.message || 'Error al guardar el paciente', type: 'error' })
             throw new Error(response.message || 'Error al guardar el paciente')
           }
         } catch (error) {
-          console.error('Error al guardar el paciente:', error)
+          // console.error('Error al guardar el paciente:', error)
+          useMessagesStore().pushMessageAction({ message: 'Error al guardar el paciente', type: 'error' })
           this.handleServerErrors(error.response?.data?.errors || { general: [error.message] })
         } finally {
           this.isSubmitting = false

@@ -2,11 +2,13 @@
 import AppFooter from '@/components/views/AppFooter.vue'
 import AppMenu from '@/components/views/items/AppMenu.vue'
 import { defineComponent } from 'vue'
+import StickyMessages from './components/utils/StickyMessages.vue';
 
 export default defineComponent({
   components: {
     AppMenu,
     AppFooter,
+    StickyMessages,
   }
 })
 </script>
@@ -17,6 +19,7 @@ export default defineComponent({
       <h1 class="app-title">ConectaSalud</h1>
       <AppMenu />
     </header>
+    <StickyMessages />
     <main class="app-content">
       <RouterView />
     </main>

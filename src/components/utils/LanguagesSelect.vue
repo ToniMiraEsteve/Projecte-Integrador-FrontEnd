@@ -70,8 +70,19 @@ export default {
         ...mapState(useCounterStore, ['languages']),
         selectedText() {
             if (this.modelValue.length === 0) return this.placeholder;
-            return this.modelValue.map(id => {
-                const option = this.languages.find(opt => opt.id === id);
+            console.log('modelValue', this.modelValue);
+            return this.modelValue.map(lang => {
+                const option = this.languages.find(opt => {
+                    console.log('opt', opt);
+                    console.log('lang', lang);
+                    return opt.id == lang.id;
+                });
+                // return option ? option.name : '';
+                if(!option){
+                    console.log('option', option);
+                }else{
+                    console.log('option', option.name);
+                }
                 return option ? option.name : '';
             }).join(', ');
         },
@@ -93,10 +104,11 @@ export default {
             }
         },
         toggleSelection(option) {
-            if (this.modelValue.includes(option.id)) {
-                this.$emit('update:modelValue', this.modelValue.filter(id => id !== option.id));
+            const index = this.modelValue.findIndex(selected => selected.id === option.id);
+            if (index === -1) {
+                this.$emit('update:modelValue', [...this.modelValue, option]);
             } else {
-                this.$emit('update:modelValue', [...this.modelValue, option.id]);
+                this.$emit('update:modelValue', this.modelValue.filter(selected => selected.id !== option.id));
             }
         },
         handleClickOutside(event) {

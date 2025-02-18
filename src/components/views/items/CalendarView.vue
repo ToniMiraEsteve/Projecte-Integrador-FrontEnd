@@ -414,7 +414,6 @@ export default {
       const today = new Date();
       const formattedToday = today.toISOString().split('T')[0];
       const dayElement = document.querySelector(`.id-${formattedToday} .vc-day-content`);
-      // console.log(dayElement);
       if (dayElement) {
         dayElement.click();
       }

@@ -173,6 +173,7 @@ import { mapState, mapActions } from 'pinia'
 import { useCounterStore } from '@/stores/index.js'
 import PatientsRepository from '@/repositories/patients.repository.js'
 import ConfirmDialog from "/src/components/utils/ConfirmDialog.vue";
+import { useMessagesStore } from '@/stores/messages';
 
 export default {
   components: {
@@ -216,13 +217,14 @@ export default {
     }
   },
   async mounted() {
-    if (this.patients.length === 0) {
       const filter = this.zoneId ? '?zoneId=' + this.zoneId : ''
       await this.loadPatients(filter)
       await this.loadZones()
       this.title = this.zoneId ? `Pacientes de ${this.getZoneName(this.zoneId)}` : 'Todos los pacientes'
-    }
-    this.isLoading = false;
+      this.isLoading = false;
+      if(!this.patients || this.patients.length === 0) {
+        useMessagesStore().pushMessageAction({type: 'warning', message: 'No se han encontrado pacientes registrados'});
+      }
   },
   methods: {
     ...mapActions(useCounterStore, ['loadPatients', 'loadZones']),
@@ -239,8 +241,10 @@ export default {
         await repositoryPatients.removePatient(this.patientToDelete.id)
         await this.loadPatients()
         this.$emit('patient-deleted', this.patientToDelete.id)
+        useMessagesStore().pushMessageAction({type: 'info', message: 'Paciente eliminado correctamente'})
       } catch (error) {
         console.error('Error al eliminar el paciente:', error)
+        useMessagesStore().pushMessageAction({type: 'error', message: 'Error al eliminar el paciente'})
       } finally {
         this.isLoading = false
         this.showDeleteDialog = false
